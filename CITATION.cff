@@ -6,7 +6,7 @@ authors:
   - family-names: "ruftyboy"
 version: 0.1.0
 date-released: 2026-09-06
-repository-code: "https://github.com/ruftyboy/-RACE-Attention-Lean-to-causal-race-formalization"
+repository-code: "https://github.com/ruftyboy/causal-race-formalization"
 license: MIT
 abstract: >-
   Lean 4/mathlib formalization of a high-probability causal RACE Attention
