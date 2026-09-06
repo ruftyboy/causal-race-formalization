@@ -43,7 +43,7 @@ theorem isAngularPairGeometry_of_unit_inner
   have hnum_sq : ‖Real.cos alpha • q - k‖ ^ 2 = Real.sin alpha ^ 2 := by
     rw [norm_sub_sq_real, norm_smul, hq, hk, Real.norm_eq_abs,
       real_inner_smul_left, hinner]
-    rw [sq_abs]
+    simp only [mul_one, one_pow, sq_abs]
     nlinarith [Real.sin_sq_add_cos_sq alpha]
   have hnum_nonneg : 0 ≤ ‖Real.cos alpha • q - k‖ := norm_nonneg _
   have hsin_nonneg : 0 ≤ Real.sin alpha := hsin.le
@@ -72,26 +72,36 @@ theorem isAngularPairGeometry_of_unit_inner
     constructor
     · intro i
       have hi : i.1 = i0 ∨ i.1 = i1 := by
-        simpa [s] using i.2
-      rcases hi with rfl | rfl
-      · simpa [s, v] using he0_norm
-      · simpa [s, v, hi01.symm] using hq
+        have hi' := i.2
+        change i.1 = i0 ∨ i.1 = i1 at hi'
+        exact hi'
+      change ‖v i.1‖ = 1
+      rcases hi with hi | hi
+      · rw [hi, hv0, he0_norm]
+      · rw [hi, hv1, hq]
     · intro a b hab
       have ha : a.1 = i0 ∨ a.1 = i1 := by
-        simpa [s] using a.2
+        have ha' := a.2
+        change a.1 = i0 ∨ a.1 = i1 at ha'
+        exact ha'
       have hb : b.1 = i0 ∨ b.1 = i1 := by
-        simpa [s] using b.2
+        have hb' := b.2
+        change b.1 = i0 ∨ b.1 = i1 at hb'
+        exact hb'
+      change inner ℝ (v a.1) (v b.1) = 0
       rcases ha with ha | ha <;> rcases hb with hb | hb
       · exfalso
         apply hab
         apply Subtype.ext
-        simpa [ha, hb]
-      · simpa [s, v, ha, hb, hi01, hi01.symm] using he0_q
-      · simpa [s, v, ha, hb, hi01, hi01.symm] using hq_e0
+        exact ha.trans hb.symm
+      · rw [ha, hb, hv0, hv1]
+        exact he0_q
+      · rw [ha, hb, hv1, hv0]
+        exact hq_e0
       · exfalso
         apply hab
         apply Subtype.ext
-        simpa [ha, hb]
+        exact ha.trans hb.symm
   have hcard : Module.finrank ℝ (RaceAmbient d) = Fintype.card (Fin d) := by
     simp [RaceAmbient]
   obtain ⟨b, hbext⟩ :=
