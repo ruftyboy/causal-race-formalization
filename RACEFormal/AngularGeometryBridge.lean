@@ -31,14 +31,11 @@ theorem isAngularPairGeometry_of_unit_inner
   have hq_self : inner ℝ q q = 1 := by
     rw [real_inner_self_eq_norm_sq, hq]
     norm_num
-  have hk_self : inner ℝ k k = 1 := by
-    rw [real_inner_self_eq_norm_sq, hk]
-    norm_num
   have hq_e0 : inner ℝ q e0 = 0 := by
     dsimp [e0]
     rw [real_inner_smul_right, inner_sub_right, real_inner_smul_right,
       hq_self, hinner]
-    field_simp [hsin0]
+    ring
   have he0_q : inner ℝ e0 q = 0 := by
     rw [real_inner_comm]
     exact hq_e0
@@ -54,11 +51,11 @@ theorem isAngularPairGeometry_of_unit_inner
   have he0_norm : ‖e0‖ = 1 := by
     dsimp [e0]
     rw [norm_smul, Real.norm_eq_abs, abs_inv, abs_of_pos hsin, hnum_norm]
-    field_simp [hsin0]
+    exact inv_mul_cancel₀ hsin0
   have hk_repr : k = Real.cos alpha • q - Real.sin alpha • e0 := by
     dsimp [e0]
-    rw [smul_smul]
-    field_simp [hsin0]
+    rw [smul_smul, mul_inv_cancel₀ hsin0, one_smul]
+    abel
 
   let i0 : Fin d := ⟨0, by omega⟩
   let i1 : Fin d := ⟨1, by omega⟩
@@ -88,8 +85,8 @@ theorem isAngularPairGeometry_of_unit_inner
         apply hab
         apply Subtype.ext
         simpa [ha, hb]
-      · simpa [s, v, ha, hb, hi01, hi01.symm] using hq_e0
       · simpa [s, v, ha, hb, hi01, hi01.symm] using he0_q
+      · simpa [s, v, ha, hb, hi01, hi01.symm] using hq_e0
       · exfalso
         apply hab
         apply Subtype.ext
