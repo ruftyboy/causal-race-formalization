@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite this repository."
+title: "Causal RACE Attention Lean Formalization"
+type: software
+authors:
+  - family-names: "ruftyboy"
+version: 0.1.0
+date-released: 2026-09-06
+repository-code: "https://github.com/ruftyboy/-RACE-Attention-Lean-to-causal-race-formalization"
+license: MIT
+abstract: >-
+  Lean 4/mathlib formalization of a high-probability causal RACE Attention
+  approximation guarantee for an independent standard-Gaussian random-hyperplane
+  sampler. This is independent research and is not an official RACE repository.
+keywords:
+  - Lean 4
+  - mathlib
+  - RACE Attention
+  - causal attention
+  - random hyperplanes
+  - formal verification
