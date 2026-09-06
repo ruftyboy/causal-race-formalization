@@ -6,19 +6,46 @@ Lean 4 / mathlib formalization of a high-probability causal RACE Attention appro
 
 ## Main result
 
-The top-level concrete theorem is:
+The strongest paper-facing theorem is:
+
+```lean
+RACEFormal.algorithm2_high_probability_output_guarantee_of_unit_vectors
+```
+
+It states the guarantee directly from natural angular assumptions: query/key vectors are unit vectors, their inner product is `cos(alpha)`, `0 < alpha < π`, the soft-hash temperature is positive, and the causal value vectors satisfy a diameter bound. In dimension at least two, the development derives the adapted two-dimensional geometry used by the Gaussian proof rather than assuming it separately.
+
+The theorem is written in explicit published-Algorithm-2 notation. Each table score is the inner product of the query and key corner-softmax distributions; the causal estimator is the normalized `Num/Den` output obtained from the averaged table scores. It instantiates the proof with a concrete `L × Pbits` array of independent standard-Gaussian random hyperplanes.
+
+The formal chain includes:
+
+- the concrete Gaussian sampler law;
+- within-table bit independence and across-table independence;
+- measurability, boundedness, and positivity of the sampled scores;
+- equivalence between explicit corner softmax and the factorized soft-RACE score;
+- the exact Gaussian random-hyperplane angular collision calculation;
+- finite-temperature soft/hard bias;
+- independent-table concentration;
+- a simultaneous causal-triangle union bound;
+- deterministic normalization stability and the diameter-sensitive output bound;
+- a derivation of `IsAngularPairGeometry` from unit-vector + inner-product assumptions.
+
+The earlier theorem
 
 ```lean
 RACEFormal.actual_race_high_probability_output_guarantee
 ```
 
-It instantiates the abstract causal RACE guarantee with a concrete `L × Pbits` array of independent standard-Gaussian random hyperplanes. The formal chain includes the sampler law, bit/table independence, measurability, score boundedness and positivity, the Gaussian angular collision calculation, finite-temperature soft/hard bias, independent-table concentration, a causal-triangle union bound, and the diameter-sensitive normalized-output bound.
+remains as the lower-level concrete sampler theorem used by the paper-facing corollary.
 
-The remaining hypotheses of the concrete theorem are mathematical input conditions rather than hidden sampler assumptions: positive table count, positive soft-hash temperature, nondegenerate angular geometry (`0 < alpha < π` together with `IsAngularPairGeometry`), and value-diameter assumptions.
+## Verification status
 
-## Scope
+The project is kernel-checked by Lean 4/mathlib. GitHub Actions runs `lake build` and separately rejects Lean source containing `sorry`, `admit`, or an explicit `axiom` placeholder. CI runs on pull requests, manual dispatches, and pushes to `main`.
 
-This project verifies the mathematical sampler and theorem. It does **not** prove that a particular CUDA/PyTorch production implementation is bit-for-bit equivalent to the formal model, and it does not substitute for independent expert review or empirical GPU benchmarking.
+## Scope and implementation correspondence
+
+This project verifies the mathematical causal RACE sampler and the published Algorithm-2-style normalized estimator represented in Lean. It does **not** prove that a particular CUDA, PyTorch, Triton, or other production implementation is bit-for-bit or semantically equivalent to this formal model.
+
+In particular, implementation-specific normalization order, stabilizing epsilons, floating-point behavior, RNG details, or kernel fusion are outside the theorem unless separately connected to the Lean definitions. Empirical speedups, memory savings, model-quality preservation, and production usefulness also require separate experiments.
 
 ## Reproduce the check
 
@@ -30,7 +57,7 @@ lake exe cache get
 lake build
 ```
 
-The CI workflow also rejects unfinished proof placeholders in the RACE formalization:
+The CI placeholder audit is:
 
 ```bash
 if grep -R -n -E '\b(sorry|admit|axiom)\b' RACEFormal RACEFormal.lean --include='*.lean'; then
@@ -43,12 +70,14 @@ fi
 - `RACEFormal/ActualRaceSampler.lean` — concrete Gaussian random-hyperplane construction.
 - `RACEFormal/ActualRaceHypotheses.lean` — sampler measurability, independence, laws, boundedness, and positivity.
 - `RACEFormal/GaussianHyperplaneSampler.lean` — Gaussian projection/angle bridge.
-- `RACEFormal/SoftmaxProductEquivalence.lean` — equivalence between the explicit corner softmax and factorized form.
+- `RACEFormal/AngularGeometryBridge.lean` — derives the adapted angular geometry from unit-vector and inner-product assumptions.
+- `RACEFormal/SoftmaxProductEquivalence.lean` — equivalence between explicit corner softmax and factorized soft-RACE form.
 - `RACEFormal/CausalRaceEntrywise.lean` — simultaneous causal entrywise guarantee.
 - `RACEFormal/FinalCausalRaceGuarantee.lean` — abstract high-probability causal output theorem.
-- `RACEFormal/ActualRaceGuarantee.lean` — final concrete theorem with sampler hypotheses discharged.
+- `RACEFormal/ActualRaceGuarantee.lean` — concrete sampler theorem with sampler hypotheses discharged.
+- `RACEFormal/Algorithm2Corollary.lean` — paper-facing unit-vector / explicit Algorithm-2 theorem.
 - `RACEFormal.lean` — imports the complete proof chain so `lake build` checks the full development.
 
 ## Provenance
 
-This repository was separated from an unrelated research repository after the causal RACE formalization reached a successful Lean/mathlib kernel check. The migrated `RACEFormal/` tree is byte-for-byte identical to the verified source tree at source commit `6179c07d8cbfedef42af50d1727b341c9431bc05`. The source GitHub Actions verification was run #143, where both `lake build` and the no-placeholder audit succeeded.
+The repository was separated from an unrelated research repository after the original causal RACE formalization reached a successful Lean/mathlib kernel check. The original migrated `RACEFormal/` tree matched source commit `6179c07d8cbfedef42af50d1727b341c9431bc05`, whose GitHub Actions run #143 passed both `lake build` and the no-placeholder audit. Subsequent public-repository commits strengthen the theorem while retaining CI verification.
