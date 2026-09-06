@@ -70,7 +70,8 @@ def algorithm2CausalBadSet
     algorithm2CausalBadSet (L := L) (Pbits := Pbits) Q K alpha beta eps =
       actualCausalRaceBadSet (L := L) (Pbits := Pbits) Q K alpha beta eps := by
   ext ω
-  simp [algorithm2CausalBadSet, actualCausalRaceBadSet, causalRaceBadSet]
+  simp [algorithm2CausalBadSet, actualCausalRaceBadSet, causalRaceBadSet,
+    actualCausalRaceAverage]
 
 /-- Algorithm-2 denominator after exchanging the finite sums over tables and prefix keys. -/
 noncomputable def algorithm2CausalDenominator
@@ -189,7 +190,7 @@ theorem algorithm2_high_probability_output_guarantee_of_unit_vectors
       (hQunit p.1) (hKunit (causalPairKeyIndex p))
       (halpha0 p) (halphapi p) (hinner p)
   have hbase := actual_race_high_probability_output_guarantee
-    (E := E) hL Q K alpha beta hbeta halpha0 halphapi hgeom
+    (E := E) (Pbits := Pbits) hL Q K alpha beta hbeta halpha0 halphapi hgeom
     V D hD hdiam hu
   dsimp only at hbase ⊢
   constructor
