@@ -36,3 +36,4 @@ import RACEFormal.CausalBiasConcentration
 import RACEFormal.CausalRaceEntrywise
 import RACEFormal.FinalCausalRaceGuarantee
 import RACEFormal.ActualRaceGuarantee
+import RACEFormal.Algorithm2Corollary
