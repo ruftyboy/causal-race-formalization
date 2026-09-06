@@ -10,6 +10,7 @@ import RACEFormal.SoftRaceBit
 import RACEFormal.CornerFactorization
 import RACEFormal.ActualRaceSampler
 import RACEFormal.GaussianHyperplaneSampler
+import RACEFormal.AngularGeometryBridge
 import RACEFormal.ActualRaceHypotheses
 import RACEFormal.SoftmaxProductEquivalence
 import RACEFormal.GaussianLeakage
@@ -35,3 +36,4 @@ import RACEFormal.CausalBiasConcentration
 import RACEFormal.CausalRaceEntrywise
 import RACEFormal.FinalCausalRaceGuarantee
 import RACEFormal.ActualRaceGuarantee
+import RACEFormal.Algorithm2Corollary
